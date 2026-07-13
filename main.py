@@ -13,7 +13,6 @@ try:
     print("✅ Config importado correctamente")
 except ImportError as e:
     print(f"❌ Error importando Config: {e}")
-    # Configuración de respaldo
     class Config:
         DB_HOST = os.getenv('DB_HOST', 'localhost')
         DB_USER = os.getenv('DB_USER', '')
@@ -42,101 +41,35 @@ except ImportError as e:
 
 # Intentar importar rutas
 routes_loaded = {}
-try:
-    from routes import auth
-    routes_loaded['auth'] = True
-    print("✅ routes/auth importado correctamente")
-except ImportError as e:
-    routes_loaded['auth'] = False
-    print(f"⚠️ No se pudo importar routes/auth: {e}")
 
-try:
-    from routes import users
-    routes_loaded['users'] = True
-    print("✅ routes/users importado correctamente")
-except ImportError as e:
-    routes_loaded['users'] = False
-    print(f"⚠️ No se pudo importar routes/users: {e}")
+# Lista de rutas a importar
+routes_list = [
+    ('auth', 'routes.auth'),
+    ('users', 'routes.users'),
+    ('clients', 'routes.clients'),
+    ('budget', 'routes.budget'),
+    ('suppliers', 'routes.suppliers'),
+    ('warehouses', 'routes.warehouses'),
+    ('inventory', 'routes.inventory'),
+    ('purchases', 'routes.purchases'),
+    ('sales', 'routes.sales'),
+    ('appointments', 'routes.appointments'),
+    ('schedule', 'routes.schedule'),
+    ('dashboard', 'routes.dashboard')
+]
 
-try:
-    from routes import clients
-    routes_loaded['clients'] = True
-    print("✅ routes/clients importado correctamente")
-except ImportError as e:
-    routes_loaded['clients'] = False
-    print(f"⚠️ No se pudo importar routes/clients: {e}")
-
-try:
-    from routes import budget
-    routes_loaded['budget'] = True
-    print("✅ routes/budget importado correctamente")
-except ImportError as e:
-    routes_loaded['budget'] = False
-    print(f"⚠️ No se pudo importar routes/budget: {e}")
-
-try:
-    from routes import suppliers
-    routes_loaded['suppliers'] = True
-    print("✅ routes/suppliers importado correctamente")
-except ImportError as e:
-    routes_loaded['suppliers'] = False
-    print(f"⚠️ No se pudo importar routes/suppliers: {e}")
-
-try:
-    from routes import warehouses
-    routes_loaded['warehouses'] = True
-    print("✅ routes/warehouses importado correctamente")
-except ImportError as e:
-    routes_loaded['warehouses'] = False
-    print(f"⚠️ No se pudo importar routes/warehouses: {e}")
-
-try:
-    from routes import inventory
-    routes_loaded['inventory'] = True
-    print("✅ routes/inventory importado correctamente")
-except ImportError as e:
-    routes_loaded['inventory'] = False
-    print(f"⚠️ No se pudo importar routes/inventory: {e}")
-
-try:
-    from routes import purchases
-    routes_loaded['purchases'] = True
-    print("✅ routes/purchases importado correctamente")
-except ImportError as e:
-    routes_loaded['purchases'] = False
-    print(f"⚠️ No se pudo importar routes/purchases: {e}")
-
-try:
-    from routes import sales
-    routes_loaded['sales'] = True
-    print("✅ routes/sales importado correctamente")
-except ImportError as e:
-    routes_loaded['sales'] = False
-    print(f"⚠️ No se pudo importar routes/sales: {e}")
-
-try:
-    from routes import appointments
-    routes_loaded['appointments'] = True
-    print("✅ routes/appointments importado correctamente")
-except ImportError as e:
-    routes_loaded['appointments'] = False
-    print(f"⚠️ No se pudo importar routes/appointments: {e}")
-
-try:
-    from routes import schedule
-    routes_loaded['schedule'] = True
-    print("✅ routes/schedule importado correctamente")
-except ImportError as e:
-    routes_loaded['schedule'] = False
-    print(f"⚠️ No se pudo importar routes/schedule: {e}")
-
-try:
-    from routes import dashboard
-    routes_loaded['dashboard'] = True
-    print("✅ routes/dashboard importado correctamente")
-except ImportError as e:
-    routes_loaded['dashboard'] = False
-    print(f"⚠️ No se pudo importar routes/dashboard: {e}")
+for route_name, route_path in routes_list:
+    try:
+        module = __import__(route_path, fromlist=['router'])
+        if hasattr(module, 'router'):
+            routes_loaded[route_name] = True
+            print(f"✅ routes/{route_name} importado correctamente")
+        else:
+            routes_loaded[route_name] = False
+            print(f"⚠️ routes/{route_name} no tiene 'router'")
+    except ImportError as e:
+        routes_loaded[route_name] = False
+        print(f"⚠️ No se pudo importar routes/{route_name}: {e}")
 
 # Crear la aplicación
 app = FastAPI(
@@ -187,39 +120,51 @@ async def health_check():
 # ============ INCLUIR RUTAS ============
 
 if routes_loaded.get('auth', False):
+    from routes import auth
     app.include_router(auth.router, prefix="/api", tags=["Autenticación"])
 
 if routes_loaded.get('users', False):
+    from routes import users
     app.include_router(users.router, prefix="/api/users", tags=["Usuarios"])
 
 if routes_loaded.get('clients', False):
+    from routes import clients
     app.include_router(clients.router, prefix="/api/clients", tags=["Clientes"])
 
 if routes_loaded.get('budget', False):
+    from routes import budget
     app.include_router(budget.router, prefix="/api/budget", tags=["Presupuesto"])
 
 if routes_loaded.get('suppliers', False):
+    from routes import suppliers
     app.include_router(suppliers.router, prefix="/api/suppliers", tags=["Proveedores"])
 
 if routes_loaded.get('warehouses', False):
+    from routes import warehouses
     app.include_router(warehouses.router, prefix="/api/warehouses", tags=["Almacenes"])
 
 if routes_loaded.get('inventory', False):
+    from routes import inventory
     app.include_router(inventory.router, prefix="/api/inventory", tags=["Inventario"])
 
 if routes_loaded.get('purchases', False):
+    from routes import purchases
     app.include_router(purchases.router, prefix="/api/purchases", tags=["Compras"])
 
 if routes_loaded.get('sales', False):
+    from routes import sales
     app.include_router(sales.router, prefix="/api/sales", tags=["Ventas"])
 
 if routes_loaded.get('appointments', False):
+    from routes import appointments
     app.include_router(appointments.router, prefix="/api/appointments", tags=["Citas"])
 
 if routes_loaded.get('schedule', False):
+    from routes import schedule
     app.include_router(schedule.router, prefix="/api/schedule", tags=["Horarios"])
 
 if routes_loaded.get('dashboard', False):
+    from routes import dashboard
     app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 
 # ============ MANEJADOR DE ERRORES ============

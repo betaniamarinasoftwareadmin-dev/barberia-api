@@ -157,6 +157,28 @@ class InventoryCreate(BaseModel):
     min_stock: int = 5
     precio: float = 0
 
+# ============ PURCHASES ============
+
+class PurchaseCreate(BaseModel):
+    orden_compra: str
+    fecha_compra: date
+    cod_proveedor: str
+    requisicion: Optional[str] = None
+    fecha_requisicion: Optional[date] = None
+    orden_pago: Optional[str] = None
+    fecha_orden_pago: Optional[date] = None
+    observacion: Optional[str] = None
+    items: List[Dict[str, Any]] = []
+
+# ============ SALES ============
+
+class SaleCreate(BaseModel):
+    factura: Optional[str] = None
+    ci_cliente: int
+    ci_trabajador: int
+    metodo_pago: str
+    items: List[Dict[str, Any]] = []
+
 # ============ APPOINTMENTS ============
 
 class AppointmentCreate(BaseModel):
@@ -172,6 +194,17 @@ class AppointmentUpdate(BaseModel):
     ci_trabajador: Optional[int] = None
     servicio: Optional[str] = None
     status: Optional[AppointmentStatus] = None
+
+# ============ SCHEDULE ============
+
+class ScheduleCreate(BaseModel):
+    ci_trabajador: int
+    dia_semana: str
+    hora_inicio_m: Optional[time] = None
+    hora_fin_m: Optional[time] = None
+    hora_inicio_t: Optional[time] = None
+    hora_fin_t: Optional[time] = None
+    es_feriado: bool = False
 
 # ============ DASHBOARD ============
 
