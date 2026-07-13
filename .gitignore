@@ -23,9 +23,11 @@ wheels/
 .installed.cfg
 *.egg
 
-# Variables de entorno
+# Variables de entorno (¡IMPORTANTE!)
 .env
 .env.local
+.env.*
+!.env.example
 
 # IDEs
 .vscode/
@@ -43,3 +45,6 @@ wheels/
 # OS
 .DS_Store
 Thumbs.db
+
+# Railway
+.railway/
