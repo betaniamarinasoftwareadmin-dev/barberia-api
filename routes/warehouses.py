@@ -1,17 +1,16 @@
-# routes/warehouses.py
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Dict
+from typing import Dict, Any, List
 
 from database import db
 from models import WarehouseCreate
-from routes.auth import get_current_user, require_manager_or_admin
+from routes.auth import get_current_user, require_admin, require_manager_or_admin
 
 router = APIRouter()
 
 @router.get("/")
 async def get_warehouses(
-    user: Dict = Depends(get_current_user)
-) -> List[Dict]:
+    user: Dict[str, Any] = Depends(get_current_user)
+) -> List[Dict[str, Any]]:
     """Obtiene todos los almacenes"""
     warehouses = db.fetch_all(
         "SELECT * FROM almacen ORDER BY nombre_almacen"
@@ -21,8 +20,8 @@ async def get_warehouses(
 @router.get("/{warehouse_id}")
 async def get_warehouse(
     warehouse_id: int,
-    user: Dict = Depends(get_current_user)
-) -> Dict:
+    user: Dict[str, Any] = Depends(get_current_user)
+) -> Dict[str, Any]:
     """Obtiene un almacén por ID"""
     warehouse = db.fetch_one(
         "SELECT * FROM almacen WHERE id_t7 = %s",
@@ -37,8 +36,8 @@ async def get_warehouse(
 @router.post("/")
 async def create_warehouse(
     warehouse_data: WarehouseCreate,
-    user: Dict = Depends(require_manager_or_admin)
-) -> Dict:
+    user: Dict[str, Any] = Depends(require_manager_or_admin)
+) -> Dict[str, Any]:
     """Crea un nuevo almacén"""
     existing = db.fetch_one(
         "SELECT * FROM almacen WHERE cod_almacen = %s",
@@ -64,8 +63,8 @@ async def create_warehouse(
 async def update_warehouse(
     warehouse_id: int,
     warehouse_data: WarehouseCreate,
-    user: Dict = Depends(require_manager_or_admin)
-) -> Dict:
+    user: Dict[str, Any] = Depends(require_manager_or_admin)
+) -> Dict[str, Any]:
     """Actualiza un almacén"""
     existing = db.fetch_one(
         "SELECT * FROM almacen WHERE id_t7 = %s",
@@ -86,8 +85,8 @@ async def update_warehouse(
 @router.delete("/{warehouse_id}")
 async def delete_warehouse(
     warehouse_id: int,
-    user: Dict = Depends(require_admin)
-) -> Dict:
+    user: Dict[str, Any] = Depends(require_admin)
+) -> Dict[str, Any]:
     """Elimina un almacén"""
     affected = db.delete('almacen', {'id_t7': warehouse_id})
     

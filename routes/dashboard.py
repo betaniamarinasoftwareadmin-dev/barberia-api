@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from datetime import datetime
-from typing import Dict, Any  # ✅ ¡AÑADIR ESTA LÍNEA!
+from typing import Dict, Any
 
 from database import db
 from models import DashboardStats
@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.get("/stats")
 async def get_dashboard_stats(
-    user: Dict[str, Any] = Depends(get_current_user)  # ✅ USAR Dict[str, Any]
+    user: Dict[str, Any] = Depends(get_current_user)
 ) -> DashboardStats:
     today = datetime.now().strftime("%Y-%m-%d")
     

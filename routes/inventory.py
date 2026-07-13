@@ -1,18 +1,17 @@
-# routes/inventory.py
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Dict, Optional
+from typing import Dict, Any, List, Optional
 
 from database import db
 from models import InventoryCreate
-from routes.auth import get_current_user, require_manager_or_admin
+from routes.auth import get_current_user, require_admin, require_manager_or_admin
 
 router = APIRouter()
 
 @router.get("/")
 async def get_inventory(
-    user: Dict = Depends(get_current_user),
+    user: Dict[str, Any] = Depends(get_current_user),
     es_servicio: Optional[bool] = None
-) -> List[Dict]:
+) -> List[Dict[str, Any]]:
     """Obtiene todo el inventario, opcionalmente filtrado por tipo"""
     query = "SELECT * FROM inventario WHERE inexistencia = 0"
     params = []
@@ -29,8 +28,8 @@ async def get_inventory(
 @router.get("/{item_id}")
 async def get_inventory_item(
     item_id: int,
-    user: Dict = Depends(get_current_user)
-) -> Dict:
+    user: Dict[str, Any] = Depends(get_current_user)
+) -> Dict[str, Any]:
     """Obtiene un ítem del inventario por ID"""
     item = db.fetch_one(
         "SELECT * FROM inventario WHERE id_t8 = %s",
@@ -45,8 +44,8 @@ async def get_inventory_item(
 @router.post("/")
 async def create_inventory_item(
     item_data: InventoryCreate,
-    user: Dict = Depends(require_manager_or_admin)
-) -> Dict:
+    user: Dict[str, Any] = Depends(require_manager_or_admin)
+) -> Dict[str, Any]:
     """Crea un nuevo ítem en el inventario"""
     existing = db.fetch_one(
         "SELECT * FROM inventario WHERE cod_producto = %s",
@@ -72,8 +71,8 @@ async def create_inventory_item(
 async def update_inventory_item(
     item_id: int,
     item_data: InventoryCreate,
-    user: Dict = Depends(require_manager_or_admin)
-) -> Dict:
+    user: Dict[str, Any] = Depends(require_manager_or_admin)
+) -> Dict[str, Any]:
     """Actualiza un ítem del inventario"""
     existing = db.fetch_one(
         "SELECT * FROM inventario WHERE id_t8 = %s",
@@ -94,8 +93,8 @@ async def update_inventory_item(
 @router.delete("/{item_id}")
 async def delete_inventory_item(
     item_id: int,
-    user: Dict = Depends(require_admin)
-) -> Dict:
+    user: Dict[str, Any] = Depends(require_admin)
+) -> Dict[str, Any]:
     """Elimina un ítem del inventario (marca como inexistente)"""
     affected = db.update(
         'inventario',

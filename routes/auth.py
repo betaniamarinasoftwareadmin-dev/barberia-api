@@ -4,7 +4,6 @@ from typing import Dict, Optional, Any
 import hashlib
 from datetime import datetime, timedelta
 import jwt
-import os
 
 from database import db
 from models import LoginRequest, LoginResponse, RegisterRequest, UserRole
@@ -65,7 +64,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
             'activo': 1
         }
     
-    # Usuario por defecto
+    # Usuario por defecto (para pruebas)
     return {
         'id_t1': payload.get('user_id', 1),
         'ci_trabajador': 12345678,
@@ -77,7 +76,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         'activo': 1
     }
 
-# ============ FUNCIONES PARA VERIFICAR ROLES ============
+# ============ FUNCIONES DE VERIFICACIÓN DE ROLES ============
 
 def check_role(user: Dict[str, Any], allowed_roles: list) -> bool:
     """Verifica si el usuario tiene un rol permitido"""
@@ -95,7 +94,7 @@ def require_manager_or_admin(user: Dict[str, Any] = Depends(get_current_user)):
         raise HTTPException(status_code=403, detail="Se requiere permisos de gerente o administrador")
     return user
 
-# ============ ENDPOINTS ============
+# ============ ENDPOINTS DE AUTENTICACIÓN ============
 
 @router.post("/login", response_model=LoginResponse)
 async def login(request: LoginRequest):
@@ -150,7 +149,7 @@ async def login(request: LoginRequest):
                 message="Inicio de sesión exitoso"
             )
     
-    # Login de prueba si no hay base de datos
+    # Login de prueba (sin base de datos)
     if request.username == "admin" and request.password == "admin123":
         token = create_token({
             'id_t1': 1,
