@@ -1,11 +1,10 @@
 {
   "build": {
-    "builder": "PYTHON",
-    "pythonVersion": "3.13"
+    "builder": "DOCKERFILE"
   },
   "deploy": {
-    "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
-    "healthcheckPath": "/health",
+    "startCommand": "python main.py",
+    "healthcheckPath": "/",
     "restartPolicyType": "ON_FAILURE"
   }
 }
